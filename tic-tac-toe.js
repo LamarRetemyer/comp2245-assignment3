@@ -1,106 +1,98 @@
 document.addEventListener("DOMContentLoaded", function () {
     const squares = document.querySelectorAll(".square");
-    const gameBoard = Array(9).fill(null);
-    let currentPlayer = "X";
+    const board = Array(9).fill(null);
+    let player = "X";
 
-    // Function to handle square clicks
-    function handleSquareClick(index) {
-        if (gameBoard[index] === null) {
-            gameBoard[index] = currentPlayer;
-            squares[index].textContent = currentPlayer;
-            squares[index].classList.add(currentPlayer);
+    function play(index) {
+        if (board[index] === null) {
+            board[index] = player;
+            squares[index].textContent = player;
+            squares[index].classList.add(player);
 
-            if (checkWinner(currentPlayer)) {
-                // A player has won
-                document.getElementById("status").textContent = `Congratulations! ${currentPlayer} is the Winner!`;
-                document.getElementById("status").classList.add("you-won");
-                disableGame(); // Disable further moves when the game is over
+            if (checkWin(player)) {
+                const message = document.getElementById("status");
+                message.textContent = `Congrats! ${player} is the Winner!`;
+                message.classList.add("you-won");
+                endGame();
             } else {
-                currentPlayer = currentPlayer === "X" ? "O" : "X";
+                player = player === "X" ? "O" : "X";
             }
         }
     }
 
-    // Function to check for a win (customize this part according to your win conditions)
-    function checkWinner(player) {
-        // Check rows, columns, and diagonals for the winning conditions
-        const winningCombos = [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-            [0, 4, 8], [2, 4, 6]             // Diagonals
+    function checkWin(p) {
+        const winCombos = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], 
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], 
+            [0, 4, 8], [2, 4, 6]
         ];
 
-        for (const combo of winningCombos) {
-            if (combo.every((index) => gameBoard[index] === player)) {
-                return true; // Player has won
+        for (const combo of winCombos) {
+            if (combo.every((index) => board[index] === p)) {
+                return true;
             }
         }
 
-        return false; // No winner yet
+        return false;
     }
 
-    // Function to handle mouse enter (hover) event
-    function handleSquareMouseEnter(index) {
+    function hoverEffect(index) {
         squares[index].classList.add("hover");
     }
 
-    // Function to handle mouse leave event
-    function handleSquareMouseLeave(index) {
+    function unhover(index) {
         squares[index].classList.remove("hover");
     }
 
-    // Function to disable further moves when the game is over
-    function disableGame() {
+    function endGame() {
         squares.forEach(function (square, index) {
             square.removeEventListener("click", function () {
-                handleSquareClick(index);
+                play(index);
             });
         });
     }
 
-    // Function to reset the game state
-    function resetGame() {
-        gameBoard.fill(null);
+    function reset() {
+        board.fill(null);
         squares.forEach(function (square) {
             square.textContent = "";
             square.classList.remove("X", "O");
         });
 
         const status = document.getElementById("status");
-        status.textContent = "Move your mouse over a square and click to play an X or an O.";
+        status.textContent = "Hover over a square and click to play an X or an O.";
         status.classList.remove("you-won");
 
         squares.forEach(function (square, index) {
             square.addEventListener("click", function () {
-                if (!gameBoard[index]) {
-                    handleSquareClick(index);
+                if (!board[index]) {
+                    play(index);
                 }
             });
         });
 
-        currentPlayer = "X";
+        player = "X";
     }
 
-    // Add event listeners for square clicks, mouse enter, and mouse leave
     squares.forEach(function (square, index) {
         square.addEventListener("click", function () {
-            if (!gameBoard[index]) {
-                handleSquareClick(index);
+            if (!board[index]) {
+                play(index);
             }
         });
 
         square.addEventListener("mouseenter", function () {
-            handleSquareMouseEnter(index);
+            hoverEffect(index);
         });
 
         square.addEventListener("mouseleave", function () {
-            handleSquareMouseLeave(index);
+            unhover(index);
         });
     });
 
-    // Add an event listener for the "New Game" button
-    document.getElementById("new-game-btn").addEventListener("click", resetGame);
+    document.getElementById("new-game-btn").addEventListener("click", reset);
 });
+
 
 
 
